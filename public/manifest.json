@@ -1,0 +1,80 @@
+{
+  "name": "TrendHub Shop",
+  "short_name": "TrendHub",
+  "description": "TrendHub Shop is your ultimate destination for trendy and high-quality products. Discover the latest in fashion, electronics, and more.",
+  "start_url": "/",
+  "scope": "/",
+  "theme_color": "#8564f3",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "prefer_related_applications": false,
+  "id": "/",
+  "dir": "auto",
+  "orientation": "portrait",
+  "categories": [
+    "shopping",
+    "fashion",
+    "electronics",
+    "lifestyle",
+    "productivity"
+  ],
+  "screenshots": [
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "label": "Application"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Application"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "description": "Go to the home page",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/web-app-manifest-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "short_name": "Profile",
+      "description": "View your profile",
+      "url": "/profile",
+      "icons": [
+        {
+          "src": "/web-app-manifest-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    }
+  ]
+}
