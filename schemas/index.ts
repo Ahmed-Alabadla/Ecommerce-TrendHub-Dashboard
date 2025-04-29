@@ -100,6 +100,31 @@ export const CreateUserSchema = z.object({
     .optional(),
 });
 
+export const SupplierSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Supplier name must be at least 3 characters")
+    .max(100, "Supplier name must be at most 100 characters"),
+
+  email: z
+    .string()
+    .email("Invalid email address")
+    .max(150, "Email must be at most 150 characters"),
+
+  website: z.string().url(),
+
+  phone: z
+    .string()
+    .min(6, { message: "Phone number must be at least 6 characters long" })
+    .max(20, { message: "Phone number must be at most 20 characters long" })
+    .regex(/^\+\d{6,}$/, {
+      message:
+        "phone must be a valid international number with country code (e.g., +970597762451)",
+    })
+    .optional()
+    .nullable(),
+});
+
 const imageUrlPattern = /\.(jpg|jpeg|png|svg|webp)$/i;
 
 export const CategorySchema = z.object({
