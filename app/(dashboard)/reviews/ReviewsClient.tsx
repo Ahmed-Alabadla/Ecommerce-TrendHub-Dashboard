@@ -54,6 +54,7 @@ export default function ReviewsClient({
           <CardDescription>Showing {data.data.length} reviews</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* TODO: filter by product */}
           <DataTablePaginate
             columns={columns}
             data={data.data}
