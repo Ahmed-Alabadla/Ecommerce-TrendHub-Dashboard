@@ -19,7 +19,7 @@ export default async function CouponsPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)} key={"coupons"}>
-      <CouponsClient />;
+      <CouponsClient />
     </HydrationBoundary>
   );
 }

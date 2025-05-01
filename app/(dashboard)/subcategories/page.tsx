@@ -19,7 +19,7 @@ export default async function SubCategoriesPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)} key={"subcategories"}>
-      <SubCategoriesClient />;
+      <SubCategoriesClient />
     </HydrationBoundary>
   );
 }
