@@ -126,6 +126,7 @@ export default function ProductForm({
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
+      ...defaultValues,
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       quantity: defaultValues?.quantity || undefined,
@@ -138,6 +139,9 @@ export default function ProductForm({
       subCategoryId: defaultValues?.subCategory?.id,
       brandId: defaultValues?.brand?.id,
       colors: defaultValues?.colors || [],
+      warranty: defaultValues?.warranty || undefined,
+      weight: defaultValues?.weight || undefined,
+      dimensions: defaultValues?.dimensions || undefined,
     },
   });
 
