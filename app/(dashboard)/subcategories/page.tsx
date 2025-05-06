@@ -3,6 +3,8 @@ import { queryClient } from "@/lib/react-query/client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import SubCategoriesClient from "./SubCategoriesClient";
 import { getSubCategories } from "@/actions/subcategories";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Sub Categories",
@@ -19,7 +21,9 @@ export default async function SubCategoriesPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)} key={"subcategories"}>
-      <SubCategoriesClient />
+      <Suspense fallback={<Loading />}>
+        <SubCategoriesClient />
+      </Suspense>
     </HydrationBoundary>
   );
 }

@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types/product";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, Star, Tag, Trash2 } from "lucide-react";
+import { Edit, Eye, Star, Tag, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 const renderStars = (ratingsAverage: number, ratingsQuantity: number) => {
   return (
@@ -163,6 +164,12 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex gap-2">
+          <Link href={`/products/${product.id}`} passHref>
+            <Button size="icon" variant="secondary">
+              <Eye />
+            </Button>
+          </Link>
+
           <DialogWrapper
             title="Edit product"
             description="Update the details of this coupon."

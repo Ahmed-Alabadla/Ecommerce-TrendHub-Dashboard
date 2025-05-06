@@ -18,10 +18,10 @@ export default async function ProductsPage({
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
   // Clear any existing product queries
-  queryClient.removeQueries({
-    queryKey: ["products"],
-    exact: false,
-  });
+  // queryClient.removeQueries({
+  //   queryKey: ["products"],
+  //   exact: false,
+  // });
 
   try {
     // Prefetch with consistent query key structure

@@ -15,7 +15,6 @@ import DataTablePaginate from "@/components/shared/dashboard/table/DataTablePagi
 import PaginationTable from "@/components/shared/dashboard/table/PaginationTable";
 import { ProductQueryParams } from "@/types/product";
 import { apiGetProducts } from "@/lib/api/product";
-import { Suspense } from "react";
 import Loading from "@/app/loading";
 import { DialogWrapper } from "@/components/shared/dashboard/DialogWrapper";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,7 @@ export default function ProductsClient({
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error, isFetching } = useQuery({
     queryKey: ["products", { page: pageNumber, limit: limitNumber }],
     queryFn: () => apiGetProducts({ page: pageNumber, limit: limitNumber }),
     staleTime: 60 * 1000, // 1 minute stale time
@@ -69,15 +68,21 @@ export default function ProductsClient({
           <ProductForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Products Inventory</CardTitle>
-          <CardDescription>
-            Showing {data?.data.length} products
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Suspense fallback={<Loading />}>
+      {(isLoading || isFetching) && (
+        <div className="flex items-center justify-center h-96">
+          <Loading />
+        </div>
+      )}
+      {data && !isLoading && !isFetching && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Products Inventory</CardTitle>
+            <CardDescription>
+              Showing {data?.data.length} products
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
             <DataTablePaginate
               columns={columns}
               data={data?.data ?? []}
@@ -94,9 +99,9 @@ export default function ProductsClient({
               lastPage={data?.meta.last_page ?? 1}
               className="mt-6"
             />
-          </Suspense>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

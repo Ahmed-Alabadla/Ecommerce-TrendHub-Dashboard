@@ -52,6 +52,31 @@ export const apiGetProducts = async (
   }
 };
 
+export const apiGetProduct = async (id: string): Promise<Product> => {
+  const token = getCookie("access_token");
+
+  if (!token) {
+    throw new Error("No access token found");
+  }
+
+  const res = await fetch(`${API_URL}/products/${id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || "Failed to get product");
+  }
+
+  const response = await res.json();
+
+  return response;
+};
+
 export const apiCreateProduct = async (
   data: CreateProductDto
 ): Promise<Product> => {

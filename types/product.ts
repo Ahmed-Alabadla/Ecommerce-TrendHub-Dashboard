@@ -36,6 +36,7 @@ export interface Product {
   category: Category;
   subCategory: SubCategory | null;
   brand: Brand | null;
+  // reviews: Review[];
 }
 
 export interface CreateProductDto {
