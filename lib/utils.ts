@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -68,3 +69,61 @@ export function generateRandomPassword(
 
   return password;
 }
+
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
+
+export const useImageUpload = () => {
+  const uploadImage = async (file: File): Promise<string> => {
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(`Max image size is 1MB.`, {
+        duration: 3000,
+      });
+      return "";
+    }
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          // Simulate network delay
+          setTimeout(() => {
+            // Ensure the result is a string (data URL)
+            if (e.target && e.target.result) {
+              resolve(e.target.result as string);
+            }
+          }, 500);
+        } else {
+          reject(new Error("No result from file reading"));
+        }
+      };
+
+      reader.onerror = () => {
+        toast.error("Upload failed", {
+          description: "Failed to upload image. Please try again.",
+          duration: 3000,
+        });
+        reject(new Error("Failed to read file"));
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const uploadMultipleImages = async (files: File[]): Promise<string[]> => {
+    try {
+      const uploads = await Promise.all(files.map((file) => uploadImage(file)));
+      return uploads.filter((url): url is string => !!url); // Filter out any undefined values
+    } catch {
+      toast.error("Upload failed", {
+        description: "Failed to upload one or more images",
+        duration: 3000,
+      });
+      return [];
+    }
+  };
+
+  return {
+    uploadImage,
+    uploadMultipleImages,
+  };
+};

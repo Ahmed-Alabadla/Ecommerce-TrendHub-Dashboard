@@ -31,10 +31,7 @@ export default async function ReviewsPage({
   });
 
   return (
-    <HydrationBoundary
-      state={dehydrate(queryClient)}
-      key={`reviews-${pageNumber}-${limitNumber}`}
-    >
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <ReviewsClient searchParams={{ page: pageNumber, limit: limitNumber }} />
     </HydrationBoundary>
   );

@@ -34,14 +34,11 @@ export default async function UsersPage({
     queryKey: ["users", { page: pageNumber, limit: limitNumber, email, name }],
     queryFn: () =>
       getUsers({ page: pageNumber, limit: limitNumber, email, name }),
-    staleTime: 0, // Always consider prefetched data stale
+    staleTime: 60 * 1000, // 1 minute stale time
   });
 
   return (
-    <HydrationBoundary
-      state={dehydrate(queryClient)}
-      key={`users-${pageNumber}-${limitNumber}-${email}-${name}`} // More efficient key
-    >
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <UsersClient
         searchParams={{ page: pageNumber, limit: limitNumber, email, name }}
       />

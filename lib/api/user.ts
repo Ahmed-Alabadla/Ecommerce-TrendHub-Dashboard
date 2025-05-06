@@ -48,7 +48,6 @@ export const apiCreateUser = async (
   }
 
   const password = generateRandomPassword();
-  console.log("password", password);
 
   const res = await fetch(`${API_URL}/admin/users`, {
     method: "POST",

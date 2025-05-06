@@ -29,7 +29,6 @@ export default function ReviewsClient({
     queryKey: ["reviews", { page: pageNumber, limit: limitNumber }],
     queryFn: () => apiGetReviews({ page: pageNumber, limit: limitNumber }),
     staleTime: 0, // Always stale to force refetch
-    refetchOnMount: true, // Always refetch when component mounts
   });
 
   if (isError) {

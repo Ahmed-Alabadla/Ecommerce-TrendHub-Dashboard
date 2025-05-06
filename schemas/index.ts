@@ -1,4 +1,29 @@
+import { ProductStatus } from "@/types/product";
 import { z } from "zod";
+
+const imageUrlPattern = /\.(jpeg|jpg|gif|png|webp|svg)$/i;
+
+const imageSchema = z.string().refine(
+  (value) => {
+    if (!value) return false;
+
+    if (value.startsWith("http")) {
+      try {
+        new URL(value);
+        return (
+          imageUrlPattern.test(value) ||
+          /\/image\//i.test(value) ||
+          /googleusercontent|gstatic|imgur|cloudinary/i.test(value)
+        );
+      } catch {
+        return false;
+      }
+    }
+
+    return value.startsWith("data:image/");
+  },
+  { message: "Please provide a valid image URL or file" }
+);
 
 export const LoginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -125,8 +150,6 @@ export const SupplierSchema = z.object({
     .nullable(),
 });
 
-const imageUrlPattern = /\.(jpg|jpeg|png|svg|webp)$/i;
-
 export const CategorySchema = z.object({
   name: z
     .string()
@@ -138,35 +161,7 @@ export const CategorySchema = z.object({
     .min(3, "Slug must be at least 3 characters")
     .max(50, "Slug must be at most 50 characters"),
 
-  image: z
-    .union([
-      z.string().refine(
-        (value) => {
-          // For empty strings, consider them valid (as image is optional)
-          if (!value) return true;
-
-          // Check if it's a URL
-          if (value.startsWith("http")) {
-            try {
-              new URL(value);
-              return imageUrlPattern.test(value);
-            } catch {
-              return false;
-            }
-          }
-
-          // Check if it's a base64 image from file upload
-          return value.startsWith("data:image/");
-        },
-        {
-          message: "Please provide a valid image URL or file",
-        }
-      ),
-      z.literal(""),
-      z.null(),
-    ])
-    .optional()
-    .nullable(),
+  image: imageSchema.optional().nullable(),
 });
 export const BrandSchema = z.object({
   name: z
@@ -179,35 +174,7 @@ export const BrandSchema = z.object({
     .min(3, "Slug must be at least 3 characters")
     .max(50, "Slug must be at most 50 characters"),
 
-  image: z
-    .union([
-      z.string().refine(
-        (value) => {
-          // For empty strings, consider them valid (as image is optional)
-          if (!value) return true;
-
-          // Check if it's a URL
-          if (value.startsWith("http")) {
-            try {
-              new URL(value);
-              return imageUrlPattern.test(value);
-            } catch {
-              return false;
-            }
-          }
-
-          // Check if it's a base64 image from file upload
-          return value.startsWith("data:image/");
-        },
-        {
-          message: "Please provide a valid image URL or file",
-        }
-      ),
-      z.literal(""),
-      z.null(),
-    ])
-    .optional()
-    .nullable(),
+  image: imageSchema.optional().nullable(),
 });
 
 export const CouponSchema = z.object({
@@ -252,4 +219,60 @@ export const SubCategorySchema = z.object({
     required_error: "Please select a category",
     invalid_type_error: "Category Id must be a number",
   }),
+});
+
+export const ProductSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Product name must be at least 3 characters")
+    .max(255, "Product name cannot exceed 255 characters"),
+
+  description: z.string().min(10, "Description must be at least 10 characters"),
+
+  quantity: z.coerce.number().min(0, "Quantity cannot be negative"),
+
+  price: z.coerce.number().min(0, "Price cannot be negative"),
+  priceAfterDiscount: z.coerce
+    .number()
+    .min(0, "Price after discount cannot be negative")
+    .optional(),
+
+  //   coverImage: z.string()
+  //   .min(1, "Cover image is required"),
+  // images: z.array(z.string())
+  //   .min(1, "At least one product image is required"),
+
+  imageCover: imageSchema, // required and validated
+
+  images: z
+    .array(imageSchema) // No empty strings or null allowed
+    .nonempty({ message: "At least one image is required" }),
+
+  colors: z
+    .array(
+      z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+        message: "Invalid color format (must be hex)",
+      })
+    )
+    .min(1, "At least one color is required"),
+
+  weight: z.coerce.number().min(0, "Weight cannot be negative").optional(),
+  dimensions: z
+    .object({
+      length: z.coerce.number().min(0, "Length cannot be negative").optional(),
+      width: z.coerce.number().min(0, "Width cannot be negative").optional(),
+      height: z.coerce.number().min(0, "Height cannot be negative").optional(),
+    })
+    .optional(),
+
+  warranty: z
+    .string()
+    .regex(/^[\d]+ (year|month)s?$/i, {
+      message: 'Warranty must be in the format: "1 year" or "6 months"',
+    })
+    .optional(),
+  status: z.nativeEnum(ProductStatus),
+  categoryId: z.coerce.number().int().min(0),
+  subCategoryId: z.coerce.number().int().min(0).optional(),
+  brandId: z.coerce.number().int().min(0).optional(),
 });

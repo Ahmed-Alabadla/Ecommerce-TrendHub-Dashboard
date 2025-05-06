@@ -1,3 +1,4 @@
+import { Product } from "./product";
 import { User } from "./user";
 
 export interface Review {
@@ -6,20 +7,9 @@ export interface Review {
   comment: string;
   createAt: string;
   updatedAt: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  product: any;
+  product: Product;
   user: User;
 }
-export interface ReviewColumn {
-  id: number;
-  rating: number;
-  comment: string;
-  createAt: string;
-  updatedAt: string;
-  productName: string;
-  userName: string;
-}
-
 export interface ReviewQueryParams {
   page?: number;
   limit?: number;

@@ -12,17 +12,12 @@ import {
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { columns } from "./columns";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { apiGetSubCategories } from "@/lib/api/subcategory";
 import SubCategoryForm from "@/components/shared/dashboard/SubCategoryForm";
+import { useSubCategories } from "@/hooks/use-subcategories";
 
 export default function SubCategoriesClient() {
-  const { data, error, isError, isPending } = useSuspenseQuery({
-    queryKey: ["subcategories"],
-    queryFn: apiGetSubCategories,
-    // staleTime: 1000 * 60 * 60, // 1h
-  });
+  const { data, error, isError, isPending } = useSubCategories();
 
   if (isError) {
     toast.error(error?.message as string, {

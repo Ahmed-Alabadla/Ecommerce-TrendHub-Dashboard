@@ -32,10 +32,9 @@ export default function UsersClient({
     queryKey: ["users", { page: pageNumber, limit: limitNumber, email, name }],
     queryFn: () =>
       apiGetUsers({ page: pageNumber, limit: limitNumber, email, name }),
-    // Critical options for proper behavior
-    staleTime: 0, // Always stale to force refetch
-    refetchOnMount: true, // Always refetch when component mounts
-    // placeholderData: (previousData) => previousData, // Prevent undefined states
+    staleTime: 60 * 1000, // 1 minute stale time
+    retry: 2, // Retry twice before failing
+    retryDelay: 1000, // 1 second between retries
   });
 
   if (error) {

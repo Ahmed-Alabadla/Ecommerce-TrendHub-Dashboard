@@ -32,6 +32,8 @@ const EXCLUDED_COLUMNS = new Set([
   "actions",
   "expander",
   "avatar",
+  "images",
+  "imageCover",
 ]);
 
 function PrintButton<TData>({
@@ -115,6 +117,8 @@ function PrintButton<TData>({
   function getTitle() {
     const pathToTitleMap: Record<string, string> = {
       "/users": "Users Report",
+      "/products": "Products Report",
+      "/reviews": "Reviews Report",
     };
     return pathToTitleMap[pathname] || "";
   }
@@ -283,7 +287,7 @@ function PrintButton<TData>({
 
   function formatHeaderId(headerId: string): string {
     const headerMap: Record<string, string> = {
-      createAt: "Registered",
+      createAt: "Created At",
       birth_date: "Birth Date",
       isActive: "Status",
     };
@@ -314,7 +318,7 @@ function PrintButton<TData>({
     const columnId = cell.column.id;
     const value = cell.getValue();
 
-    if (["image", "photo"].includes(columnId)) {
+    if (["image", "images", "imageCover", "photo"].includes(columnId)) {
       return "--";
     }
 
