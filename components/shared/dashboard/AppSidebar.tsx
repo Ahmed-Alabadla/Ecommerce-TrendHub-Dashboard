@@ -14,7 +14,7 @@ import {
   Percent,
   Truck,
   Tag,
-  BadgePercent,
+  ShoppingBasket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -66,6 +66,11 @@ const menuItems = [
     icon: ShoppingCart,
   },
   {
+    title: "Carts",
+    path: "/carts",
+    icon: ShoppingBasket,
+  },
+  {
     title: "Customers",
     path: "/customers",
     icon: Users,
@@ -90,11 +95,7 @@ const menuItems = [
     path: "/suppliers",
     icon: Truck,
   },
-  {
-    title: "Taxes",
-    path: "/taxes",
-    icon: BadgePercent,
-  },
+
   {
     title: "Analytics",
     path: "/analytics",
@@ -150,7 +151,7 @@ export default function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(5, 8).map((item) => (
+              {menuItems.slice(5, 9).map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <Link
                     href={item.path}
@@ -176,7 +177,7 @@ export default function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(8, 12).map((item) => (
+              {menuItems.slice(9, 12).map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <Link
                     href={item.path}

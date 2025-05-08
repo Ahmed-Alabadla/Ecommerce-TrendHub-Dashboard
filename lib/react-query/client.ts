@@ -8,7 +8,8 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false, // Better for UX with Suspense
       refetchOnMount: false, // Let Suspense handle it
       refetchOnReconnect: true,
-      retry: 1,
+      retry: 2, // Retry twice before failing
+      retryDelay: 1000, // 1 second between retries
     },
     mutations: {
       retry: 1,
