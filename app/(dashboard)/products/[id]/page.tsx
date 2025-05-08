@@ -1,9 +1,9 @@
 import ProductDetails from "@/components/shared/dashboard/ProductDetails";
 
-export default function ProductDetailsPage({
-  params,
-}: {
+interface Props {
   params: { id: string };
-}) {
+}
+
+export default function ProductDetailsPage({ params }: Props) {
   return <ProductDetails id={params.id} />;
 }
