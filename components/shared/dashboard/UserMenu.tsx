@@ -36,8 +36,12 @@ export default function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={data?.avatar ?? ""} alt="avatar" />
+          <Avatar className="h-10 w-10 border">
+            <AvatarImage
+              src={data?.avatar ?? ""}
+              alt="avatar"
+              className="object-contain"
+            />
 
             <AvatarFallback>
               {data?.name.charAt(0).toUpperCase()}

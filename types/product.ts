@@ -23,7 +23,7 @@ export interface Product {
   priceAfterDiscount: number | null;
   imageCover: string;
   images: string[];
-  colors: (string | undefined)[];
+  // colors: (string | undefined)[];
   sold: number;
   ratingsAverage: string;
   ratingsQuantity: number;
@@ -45,9 +45,9 @@ export interface CreateProductDto {
   quantity: number;
   price: number;
   priceAfterDiscount?: number | null;
-  imageCover: string;
-  images: string[];
-  colors?: (string | undefined)[];
+  imageCover: string | File;
+  images: string[] | File[];
+  // colors?: (string | undefined)[];
   warranty?: string;
   weight?: number;
   dimensions?: Dimensions;

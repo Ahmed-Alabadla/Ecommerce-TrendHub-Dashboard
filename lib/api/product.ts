@@ -37,10 +37,11 @@ export const apiGetProducts = async (
     );
 
     if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(
-        errorData.message || "Failed to fetch products with unknown error"
-      );
+      const err = await res.json();
+
+      const message =
+        typeof err.message === "object" ? err.message[0] : err.message;
+      throw new Error(message);
     }
 
     return await res.json();
@@ -68,8 +69,11 @@ export const apiGetProduct = async (id: string): Promise<Product> => {
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to get product");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -86,18 +90,59 @@ export const apiCreateProduct = async (
     throw new Error("No access token found");
   }
 
+  const formData = new FormData();
+  const {
+    name,
+    description,
+    quantity,
+    price,
+    priceAfterDiscount,
+    imageCover,
+    images,
+    warranty,
+    weight,
+    dimensions,
+    status,
+    categoryId,
+    subCategoryId,
+    brandId,
+  } = data;
+
+  if (name) formData.append("name", name);
+  if (description) formData.append("description", description);
+  if (quantity) formData.append("quantity", quantity.toString());
+  if (price) formData.append("price", price.toFixed(2));
+  if (priceAfterDiscount)
+    formData.append("priceAfterDiscount", priceAfterDiscount.toFixed(2));
+  if (imageCover) formData.append("imageCover", imageCover);
+  if (images) {
+    images.forEach((file) => {
+      formData.append("images", file);
+    });
+  }
+  if (warranty) formData.append("warranty", warranty);
+  if (weight) formData.append("weight", weight.toFixed(2));
+  if (dimensions) formData.append("dimensions", JSON.stringify(dimensions));
+  if (status) formData.append("status", status);
+  if (categoryId) formData.append("categoryId", categoryId.toString());
+  if (subCategoryId) formData.append("subCategoryId", subCategoryId.toString());
+  if (brandId) formData.append("brandId", brandId.toString());
+
   const res = await fetch(`${API_URL}/products`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify(data),
+    body: formData,
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create product");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -107,7 +152,7 @@ export const apiCreateProduct = async (
 
 export const apiUpdateProduct = async (
   id: number,
-  data: Partial<Product>
+  data: Partial<CreateProductDto>
 ): Promise<Product> => {
   const token = getCookie("access_token");
 
@@ -115,19 +160,65 @@ export const apiUpdateProduct = async (
     throw new Error("No access token found");
   }
 
+  const formData = new FormData();
+  const {
+    name,
+    description,
+    quantity,
+    price,
+    priceAfterDiscount,
+    imageCover,
+    images,
+    warranty,
+    weight,
+    dimensions,
+    status,
+    categoryId,
+    subCategoryId,
+    brandId,
+  } = data;
+
+  if (name) formData.append("name", name);
+  if (description) formData.append("description", description);
+  if (quantity) formData.append("quantity", quantity.toString());
+  if (price) formData.append("price", price.toFixed(2));
+  if (priceAfterDiscount)
+    formData.append("priceAfterDiscount", priceAfterDiscount.toFixed(2));
+  if (imageCover) formData.append("imageCover", imageCover);
+  if (images) {
+    images.forEach((file) => {
+      formData.append("images", file);
+    });
+  }
+  // if (images) {
+  //   formData.append("images", JSON.stringify(images)); // Send as JSON string
+  // }
+  if (warranty) formData.append("warranty", warranty);
+  if (weight) formData.append("weight", weight.toFixed(2));
+  if (dimensions) formData.append("dimensions", JSON.stringify(dimensions));
+  if (status) formData.append("status", status);
+  if (categoryId) formData.append("categoryId", categoryId.toString());
+  if (subCategoryId) formData.append("subCategoryId", subCategoryId.toString());
+  if (brandId) formData.append("brandId", brandId.toString());
+
+
   const res = await fetch(`${API_URL}/products/${id}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify(data),
+    body: formData,
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update product");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
+
   const response = await res.json();
 
   return response;
@@ -147,6 +238,10 @@ export const apiDeleteProduct = async (id: number): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to delete product");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

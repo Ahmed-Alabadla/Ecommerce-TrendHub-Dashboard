@@ -23,22 +23,13 @@ import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query/client";
-import { Category } from "@/types/category";
-import Image from "next/image";
+import { Category, CreateCategoryDto } from "@/types/category";
 import {
   apiCreateCategory,
   apiDeleteCategory,
   apiUpdateCategory,
 } from "@/lib/api/category";
-
-const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/svg+xml",
-  "image/webp",
-] as const;
+import { ImageDropzone } from "./ImageDropzone";
 
 type CategoryFormValues = z.infer<typeof CategorySchema>;
 
@@ -61,7 +52,7 @@ export default function CategoryForm({
     defaultValues: {
       ...defaultValues,
       name: defaultValues?.name,
-      image: defaultValues?.image,
+      image: defaultValues?.image || "",
     },
   });
 
@@ -86,8 +77,13 @@ export default function CategoryForm({
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<Category> }) =>
-      apiUpdateCategory(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: Partial<CreateCategoryDto>;
+    }) => apiUpdateCategory(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success("Category updated successfully", {
@@ -155,39 +151,6 @@ export default function CategoryForm({
     );
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error(`Max image size is 1MB.`, {
-          duration: 5000,
-        });
-        e.target.value = "";
-        return;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (!ACCEPTED_IMAGE_TYPES.includes(file.type as any)) {
-        toast.error(
-          "Only .jpg, .jpeg, .png, .svg and .webp formats are supported.",
-          {
-            duration: 5000,
-          }
-        );
-        e.target.value = "";
-        return;
-      }
-
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        form.setValue("image", reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -232,25 +195,14 @@ export default function CategoryForm({
             <FormItem>
               <FormLabel>Category Image</FormLabel>
               <FormControl>
-                <div className="space-y-4">
-                  {field.value && (
-                    <div className="relative w-full flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={field.value}
-                        alt="Preview"
-                        className="object-cover object-center rounded-lg"
-                        width={250}
-                        height={250}
-                      />
-                    </div>
-                  )}
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="cursor-pointer"
-                  />
-                </div>
+                <ImageDropzone
+                  width={250}
+                  height={250}
+                  value={field.value}
+                  onChange={(file) => {
+                    field.onChange(file);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

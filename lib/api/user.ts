@@ -28,9 +28,12 @@ export const apiGetUsers = async (
     },
     cache: "no-store",
   });
-
   if (!res.ok) {
-    throw new Error("Failed to fetch users");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -62,8 +65,11 @@ export const apiCreateUser = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create user");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -91,8 +97,11 @@ export const apiUpdateUser = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update user");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 
@@ -113,6 +122,10 @@ export const apiDeleteUser = async (id: number): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to delete user");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

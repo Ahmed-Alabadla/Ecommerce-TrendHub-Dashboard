@@ -27,7 +27,11 @@ export const apiGetReviews = async (
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch reviews");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 
@@ -48,6 +52,10 @@ export const apiDeleteReview = async (id: number): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to delete brand");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

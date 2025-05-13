@@ -23,22 +23,13 @@ import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query/client";
-import Image from "next/image";
 import { Brand, CreateBrandDto } from "@/types/brand";
 import {
   apiCreateBrand,
   apiDeleteBrand,
   apiUpdateBrand,
 } from "@/lib/api/brand";
-
-const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/svg+xml",
-  "image/webp",
-] as const;
+import { ImageDropzone } from "./ImageDropzone";
 
 type BrandFormValues = z.infer<typeof BrandSchema>;
 
@@ -61,7 +52,7 @@ export default function BrandForm({
     defaultValues: {
       ...defaultValues,
       name: defaultValues?.name,
-      image: defaultValues?.image,
+      image: defaultValues?.image || "",
     },
   });
 
@@ -155,39 +146,6 @@ export default function BrandForm({
     );
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error(`Max image size is 1MB.`, {
-          duration: 5000,
-        });
-        e.target.value = "";
-        return;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (!ACCEPTED_IMAGE_TYPES.includes(file.type as any)) {
-        toast.error(
-          "Only .jpg, .jpeg, .png, .svg and .webp formats are supported.",
-          {
-            duration: 5000,
-          }
-        );
-        e.target.value = "";
-        return;
-      }
-
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        form.setValue("image", reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -232,25 +190,14 @@ export default function BrandForm({
             <FormItem>
               <FormLabel>Brand Image</FormLabel>
               <FormControl>
-                <div className="space-y-4">
-                  {field.value && (
-                    <div className="relative w-full flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={field.value}
-                        alt="Preview"
-                        className="object-cover object-center rounded-lg"
-                        width={250}
-                        height={250}
-                      />
-                    </div>
-                  )}
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="cursor-pointer"
-                  />
-                </div>
+                <ImageDropzone
+                  width={250}
+                  height={250}
+                  value={field.value}
+                  onChange={(file) => {
+                    field.onChange(file);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -26,6 +26,7 @@ interface DatePickerProps {
   onChange: (date: Date | undefined) => void;
   startYear?: number;
   endYear?: number;
+  disabled?: boolean;
 }
 
 export function DatePicker({
@@ -33,6 +34,7 @@ export function DatePicker({
   onChange: setDate,
   startYear = getYear(new Date()) - 100,
   endYear = getYear(new Date()) + 100,
+  disabled = false,
 }: DatePickerProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   // const date = selected || new Date();
@@ -98,6 +100,7 @@ export function DatePicker({
             !date && "text-muted-foreground"
           )}
           onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+          disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? formatDate(date) : <span>Select Date</span>}

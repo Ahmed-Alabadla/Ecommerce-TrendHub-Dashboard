@@ -19,7 +19,11 @@ export const apiGetSuppliers = async (): Promise<Supplier[]> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch suppliers");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 
@@ -45,8 +49,11 @@ export const apiCreateSupplier = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create Supplier");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -74,8 +81,11 @@ export const apiUpdateSupplier = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update Supplier");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -95,8 +105,11 @@ export const apiDeleteSupplier = async (id: number): Promise<void> => {
       Authorization: `Bearer ${token}`,
     },
   });
-
   if (!res.ok) {
-    throw new Error("Failed to delete Supplier");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

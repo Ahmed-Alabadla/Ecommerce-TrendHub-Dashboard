@@ -9,3 +9,9 @@ export interface Category {
   createAt: string;
   updatedAt: string;
 }
+
+export interface CreateCategoryDto {
+  name: string;
+  slug: string;
+  image?: string | File;
+}

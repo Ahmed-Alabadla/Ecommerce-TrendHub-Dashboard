@@ -19,8 +19,13 @@ export const apiGetBrands = async (): Promise<Brand[]> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch brands");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
+
   const response = await res.json();
 
   return response;
@@ -33,21 +38,27 @@ export const apiCreateBrand = async (data: CreateBrandDto): Promise<Brand> => {
     throw new Error("No access token found");
   }
 
+  const formData = new FormData();
+  const { name, slug, image } = data;
+  formData.append("name", name);
+  formData.append("slug", slug.toLowerCase());
+  if (image) formData.append("image", image);
+
   const res = await fetch(`${API_URL}/brands`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify({
-      ...data,
-      slug: data.slug.toLowerCase(),
-    }),
+    body: formData,
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create brand");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -65,21 +76,27 @@ export const apiUpdateBrand = async (
     throw new Error("No access token found");
   }
 
+  const formData = new FormData();
+  const { name, slug, image } = data;
+  if (name) formData.append("name", name);
+  if (slug) formData.append("slug", slug.toLowerCase());
+  if (image) formData.append("image", image);
+
   const res = await fetch(`${API_URL}/brands/${id}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify({
-      ...data,
-      slug: data.slug?.toLocaleLowerCase(),
-    }),
+    body: formData,
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update brand");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -101,6 +118,10 @@ export const apiDeleteBrand = async (id: number): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to delete brand");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

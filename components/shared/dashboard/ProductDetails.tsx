@@ -225,29 +225,7 @@ export default function ProductDetails({ id }: { id: string }) {
                     </div>
                   </div>
 
-                  <Separator />
 
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                      Available Colors
-                    </h3>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {product.colors.map(
-                        (color, index) =>
-                          color && (
-                            <div
-                              key={index}
-                              className="w-8 h-8 rounded-full border flex items-center justify-center"
-                              style={{ backgroundColor: color }}
-                              title={color}
-                            />
-                          )
-                      )}
-                      {product.colors.length === 0 && (
-                        <span>No color options available</span>
-                      )}
-                    </div>
-                  </div>
 
                   <Separator />
 

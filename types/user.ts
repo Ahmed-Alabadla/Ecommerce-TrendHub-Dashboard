@@ -32,3 +32,16 @@ export interface PaginatedUsers {
   data: User[];
   meta: Meta;
 }
+
+export interface UpdateProfileDto {
+  name?: string;
+  phone?: string;
+  avatar?: string | File;
+  address?: string;
+  birth_date?: Date | string;
+  gender?: string;
+}
+export interface ChangePasswordDto {
+  oldPassword: string;
+  newPassword: string;
+}

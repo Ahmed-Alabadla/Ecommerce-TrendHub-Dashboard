@@ -37,17 +37,13 @@ import { useCategory } from "@/hooks/use-categories";
 import { useBrands } from "@/hooks/use-brands";
 import { useSubCategories } from "@/hooks/use-subcategories";
 import { useEffect, useState } from "react";
-import { useImageUpload } from "@/lib/utils";
 import {
   apiCreateProduct,
   apiDeleteProduct,
   apiUpdateProduct,
 } from "@/lib/api/product";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
-import { ArrowLeft, ArrowRight, ImageIcon, Weight, X } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import ColorPicker from "./ColorPicker";
+import { ArrowLeft, ArrowRight, Weight } from "lucide-react";
 import IconsDimensions from "./IconsDimensions";
 import { Stepper } from "@/components/ui/stepper";
 import {
@@ -57,6 +53,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MultipleImageDropzone } from "./MultipleImageDropzone";
+import { ImageDropzone } from "./ImageDropzone";
 
 type ProductFormValues = z.infer<typeof ProductSchema>;
 
@@ -75,7 +73,7 @@ export default function ProductForm({
   id,
 }: ProductFormProps) {
   const [step, setStep] = useState(1);
-  const totalSteps = 5; // Basic, Images, Classification, Colors, Attributes
+  const totalSteps = 4; // Basic, Images, Classification, Attributes
   const nextStep = async () => {
     // Validate current step before proceeding
     let isValid = false;
@@ -114,8 +112,6 @@ export default function ProductForm({
   const { data: brands } = useBrands();
   const { data: subcategories } = useSubCategories();
 
-  const { uploadImage, uploadMultipleImages } = useImageUpload();
-
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>(
     defaultValues?.category?.id
   );
@@ -138,7 +134,6 @@ export default function ProductForm({
       categoryId: defaultValues?.category?.id || undefined,
       subCategoryId: defaultValues?.subCategory?.id,
       brandId: defaultValues?.brand?.id,
-      colors: defaultValues?.colors || [],
       warranty: defaultValues?.warranty || undefined,
       weight: defaultValues?.weight || undefined,
       dimensions: defaultValues?.dimensions || undefined,
@@ -207,15 +202,25 @@ export default function ProductForm({
     },
   });
 
-  const onSubmit = (data: ProductFormValues) => {
-    console.log("new product =>", data);
+  const onSubmit = (values: ProductFormValues) => {
+    console.log("new product =>", values);
 
     if (type === "create") {
-      addMutation.mutate(data);
+      addMutation.mutate({
+        ...values,
+        images: values.images.every((item) => typeof item === "string")
+          ? (values.images as string[])
+          : (values.images as File[]),
+      });
     } else if (id && type === "edit") {
       updateMutation.mutate({
         id,
-        data: data,
+        data: {
+          ...values,
+          images: values.images.every((item) => typeof item === "string")
+            ? (values.images as string[])
+            : (values.images as File[]),
+        },
       });
     }
   };
@@ -231,44 +236,6 @@ export default function ProductForm({
   const handleCategoryChange = (value: number) => {
     setSelectedCategory(value);
     form.setValue("categoryId", value);
-  };
-
-  const handleCoverImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.files && e.target.files[0]) {
-      try {
-        const imageUrl = await uploadImage(e.target.files[0]);
-        console.log("cover =>", imageUrl);
-
-        form.setValue("imageCover", imageUrl);
-      } catch (error) {
-        console.error("Upload failed:", error);
-      }
-    }
-  };
-
-  const handleProductImagesUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.files && e.target.files.length > 0) {
-      try {
-        const files = Array.from(e.target.files);
-        const imageUrls = await uploadMultipleImages(files);
-        const currentImages = form.getValues("images") || [];
-
-        form.setValue("images", [...currentImages, ...imageUrls]);
-      } catch (error) {
-        console.error("Upload failed:", error);
-      }
-    }
-  };
-  const removeImage = (index: number) => {
-    const currentImages = [...form.getValues("images")];
-    currentImages.splice(index, 1);
-    if (currentImages.length > 0) {
-      form.setValue("images", currentImages as [string, ...string[]]);
-    }
   };
 
   // =============== Delete Product =================
@@ -483,45 +450,14 @@ export default function ProductForm({
                       Cover Image
                     </FormLabel>
                     <FormControl>
-                      <div className="space-y-2">
-                        {field.value ? (
-                          <div className="relative aspect-square w-full max-w-56 rounded-md overflow-hidden border">
-                            <Image
-                              src={field.value}
-                              alt="Cover"
-                              className="object-cover w-full h-full"
-                              fill
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-2 right-2 h-8 w-8"
-                              onClick={() => form.setValue("imageCover", "")}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center border border-dashed rounded-md h-56 w-full max-w-56">
-                            <Label className="cursor-pointer flex flex-col items-center justify-center w-full h-full hover:bg-muted/50 transition-colors">
-                              <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
-                              <span className="text-sm text-muted-foreground">
-                                Upload cover image
-                              </span>
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleCoverImageUpload}
-                              />
-                            </Label>
-                          </div>
-                        )}
-                        <div className="text-xs text-muted-foreground">
-                          This will be the main image displayed for your product
-                        </div>
-                      </div>
+                      <ImageDropzone
+                        width={250}
+                        height={250}
+                        value={field.value}
+                        onChange={(file) => {
+                          field.onChange(file);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -533,9 +469,9 @@ export default function ProductForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="required-input">
-                      Additional Images
+                      Additional Images (1-5)
                     </FormLabel>
-                    <FormControl>
+                    {/* <FormControl>
                       <div className="space-y-2">
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                           {field.value
@@ -584,7 +520,22 @@ export default function ProductForm({
                           your product
                         </div>
                       </div>
+                    </FormControl> */}
+                    <FormControl>
+                      <MultipleImageDropzone
+                        maxFiles={5}
+                        width={100}
+                        height={100}
+                        value={field.value}
+                        onChange={(file) => {
+                          field.onChange(file);
+                        }}
+                      />
                     </FormControl>
+                    <FormDescription>
+                      Upload multiple images to showcase different angles of
+                      your product
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -710,7 +661,7 @@ export default function ProductForm({
         )}
 
         {/* Colors Section */}
-        {step === 4 && (
+        {/* {step === 4 && (
           <Card>
             <CardHeader>
               <CardTitle>Colors</CardTitle>
@@ -744,7 +695,7 @@ export default function ProductForm({
               />
             </CardContent>
           </Card>
-        )}
+        )} */}
 
         {/* Physical Attributes Section */}
         {step === 5 && (

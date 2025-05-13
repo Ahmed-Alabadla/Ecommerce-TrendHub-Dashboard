@@ -1,4 +1,4 @@
-import { Category } from "@/types/category";
+import { Category, CreateCategoryDto } from "@/types/category";
 import { getCookie } from "cookies-next/client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -19,15 +19,20 @@ export const apiGetCategories = async (): Promise<Category[]> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch categories");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
+
   const response = await res.json();
 
   return response;
 };
 
 export const apiCreateCategory = async (
-  data: Omit<Category, "id" | "createAt" | "updatedAt" | "subCategories">
+  data: CreateCategoryDto
 ): Promise<Category> => {
   const token = getCookie("access_token");
 
@@ -35,21 +40,27 @@ export const apiCreateCategory = async (
     throw new Error("No access token found");
   }
 
+  const formData = new FormData();
+  const { name, slug, image } = data;
+  formData.append("name", name);
+  formData.append("slug", slug.toLowerCase());
+  if (image) formData.append("image", image);
+
   const res = await fetch(`${API_URL}/categories`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify({
-      ...data,
-      slug: data.slug.toLowerCase(),
-    }),
+    body: formData,
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create category");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -59,7 +70,7 @@ export const apiCreateCategory = async (
 
 export const apiUpdateCategory = async (
   id: number,
-  data: Partial<Category>
+  data: Partial<CreateCategoryDto>
 ): Promise<Category> => {
   const token = getCookie("access_token");
 
@@ -67,21 +78,27 @@ export const apiUpdateCategory = async (
     throw new Error("No access token found");
   }
 
+  const formData = new FormData();
+  const { name, slug, image } = data;
+  if (name) formData.append("name", name);
+  if (slug) formData.append("slug", slug.toLowerCase());
+  if (image) formData.append("image", image);
+
   const res = await fetch(`${API_URL}/categories/${id}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-    body: JSON.stringify({
-      ...data,
-      slug: data.slug?.toLocaleLowerCase(),
-    }),
+    body: formData,
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update category");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -103,6 +120,10 @@ export const apiDeleteCategory = async (id: number): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to delete category");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

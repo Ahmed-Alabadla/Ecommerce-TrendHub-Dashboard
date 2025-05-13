@@ -1,27 +1,57 @@
 import { ProductStatus } from "@/types/product";
 import { z } from "zod";
 
-const imageUrlPattern = /\.(jpeg|jpg|gif|png|webp|svg)$/i;
+const imageUrlPattern = /\.(jpeg|jpg|gif|png|webp)$/i;
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
-const imageSchema = z.string().refine(
-  (value) => {
-    if (!value) return false;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/jpg",
+] as const;
 
-    if (value.startsWith("http")) {
-      try {
-        new URL(value);
-        return (
-          imageUrlPattern.test(value) ||
-          /\/image\//i.test(value) ||
-          /googleusercontent|gstatic|imgur|cloudinary/i.test(value)
-        );
-      } catch {
-        return false;
-      }
-    }
+const imageSchema = z.union(
+  [
+    z.string().refine(
+      (value) => {
+        if (!value) return true;
 
-    return value.startsWith("data:image/");
-  },
+        if (value.startsWith("http")) {
+          try {
+            new URL(value);
+            return (
+              imageUrlPattern.test(value) ||
+              /\/image\//i.test(value) ||
+              /cloudinary/i.test(value)
+            );
+          } catch {
+            return false;
+          }
+        }
+
+        return value;
+      },
+      { message: "Please provide a valid image URL or file" }
+    ),
+    z
+      .instanceof(File)
+      .refine(
+        (file) => file.size <= MAX_FILE_SIZE, //  limit file size to 2MB
+        { message: "File must be less than 2MB" }
+      )
+      .refine(
+        (file) =>
+          ACCEPTED_IMAGE_TYPES.includes(
+            file.type as (typeof ACCEPTED_IMAGE_TYPES)[number]
+          ),
+        {
+          message:
+            "Only .jpg, .jpeg, .png, .gif and .webp formats are supported.",
+        }
+      ),
+  ],
   { message: "Please provide a valid image URL or file" }
 );
 
@@ -161,7 +191,7 @@ export const CategorySchema = z.object({
     .min(3, "Slug must be at least 3 characters")
     .max(50, "Slug must be at most 50 characters"),
 
-  image: imageSchema.optional().nullable(),
+  image: imageSchema.optional(),
 });
 export const BrandSchema = z.object({
   name: z
@@ -174,7 +204,7 @@ export const BrandSchema = z.object({
     .min(3, "Slug must be at least 3 characters")
     .max(50, "Slug must be at most 50 characters"),
 
-  image: imageSchema.optional().nullable(),
+  image: imageSchema.optional(),
 });
 
 export const CouponSchema = z.object({
@@ -242,19 +272,19 @@ export const ProductSchema = z.object({
   // images: z.array(z.string())
   //   .min(1, "At least one product image is required"),
 
-  imageCover: imageSchema, // required and validated
-
+  imageCover: imageSchema, // required single image
   images: z
-    .array(imageSchema) // No empty strings or null allowed
-    .nonempty({ message: "At least one image is required" }),
+    .array(imageSchema)
+    .min(1, { message: "At least one image is required" })
+    .max(5, { message: "Maximum 5 images allowed" }),
 
-  colors: z
-    .array(
-      z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-        message: "Invalid color format (must be hex)",
-      })
-    )
-    .min(1, "At least one color is required"),
+  // colors: z
+  //   .array(
+  //     z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+  //       message: "Invalid color format (must be hex)",
+  //     })
+  //   )
+  //   .min(1, "At least one color is required"),
 
   weight: z.coerce.number().min(0, "Weight cannot be negative").optional(),
   dimensions: z
@@ -276,3 +306,118 @@ export const ProductSchema = z.object({
   subCategoryId: z.coerce.number().int().min(0).optional(),
   brandId: z.coerce.number().int().min(0).optional(),
 });
+
+export const settingsSchema = z.object({
+  store_name: z
+    .string()
+    .min(3, "Store name must be at least 3 characters")
+    .max(255, "Store name must be less than 255 characters")
+    .optional(),
+
+  store_email: z
+    .string()
+    .email("Please enter a valid email address")
+    .min(3, "Email must be at least 3 characters")
+    .max(255, "Email must be less than 255 characters")
+    .optional(),
+
+  store_phone: z
+    .string()
+    .min(6, { message: "Phone number must be at least 6 characters long" })
+    .max(20, { message: "Phone number must be at most 20 characters long" })
+    .regex(/^\+\d{6,}$/, {
+      message:
+        "phone must be a valid international number with country code (e.g., +970597762451)",
+    })
+    .optional(),
+
+  store_address: z
+    .string()
+    .min(6, "Store address must be at least 6 characters long")
+    .max(255, "Store address must be at most 255 characters long")
+    .optional(),
+
+  store_logo: imageSchema.optional(),
+
+  tax_rate: z
+    .number()
+    .min(0, "Tax rate cannot be negative")
+    .max(99.99, "Tax rate cannot exceed 99.99%")
+    .optional(),
+
+  tax_enabled: z.boolean().optional(),
+
+  shipping_rate: z
+    .number()
+    .min(0, "Shipping rate cannot be negative")
+    .max(99.99, "Shipping rate cannot exceed 99.99%")
+    .optional(),
+
+  shipping_enabled: z.boolean().optional(),
+});
+
+export const profileSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Full name must be at least 3 characters")
+    .max(100, "Full name must be at most 100 characters")
+    .optional(),
+
+  phone: z
+    .string()
+    .min(6, { message: "Phone number must be at least 6 characters long" })
+    .max(20, { message: "Phone number must be at most 20 characters long" })
+    .regex(/^\+\d{6,}$/, {
+      message:
+        "phone must be a valid international number with country code (e.g., +970597762451)",
+    })
+    .optional(),
+
+  avatar: imageSchema.optional(),
+
+  address: z
+    .string()
+    .min(6, "Address must be at least 6 characters long")
+    .max(255, "Address must be at most 255 characters long")
+    .optional(),
+
+  birth_date: z
+    .union([z.date(), z.string()])
+    .optional()
+
+    .refine(
+      (date) => {
+        if (!date) return true; // Allow null values if needed
+        if (typeof date === "string") {
+          return new Date(date) < new Date();
+        }
+        return date < new Date();
+      },
+      {
+        message: "Date of birth can't be today or in the future",
+      }
+    ),
+
+  gender: z
+    .enum(["male", "female"], {
+      errorMap: () => ({ message: "Gender must be either male or female" }),
+    })
+    .optional(),
+});
+
+export const ChangePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must include uppercase, lowercase, and number"
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

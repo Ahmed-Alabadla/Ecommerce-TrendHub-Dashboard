@@ -276,6 +276,7 @@ export default function CouponForm({
                 <DatePicker
                   selected={field.value ? new Date(field.value) : undefined}
                   onChange={field.onChange}
+                  disabled={addMutation.isPending || updateMutation.isPending}
                 />
               </FormControl>
               <FormMessage />

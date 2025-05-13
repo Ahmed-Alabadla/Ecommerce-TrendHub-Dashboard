@@ -33,7 +33,7 @@ export default function ImageDialog({
       <Image
         src={imageUrl ? imageUrl : pathname === "/users" ? avatar : logo}
         alt={altText ? altText : "Avatar"}
-        className="w-12 h-12 object-cover rounded-full cursor-pointer border"
+        className="w-12 h-12 object-contain rounded-full cursor-pointer border"
         onClick={() => setIsOpen(true)}
         width={48}
         height={48}

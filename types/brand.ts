@@ -10,5 +10,5 @@ export interface Brand {
 export interface CreateBrandDto {
   name: string;
   slug: string;
-  image?: string | null;
+  image?: string | File;
 }

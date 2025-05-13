@@ -19,7 +19,11 @@ export const apiGetCoupons = async (): Promise<Coupon[]> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch coupons");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 
@@ -45,8 +49,11 @@ export const apiCreateCoupon = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create coupon");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -74,8 +81,11 @@ export const apiUpdateCoupon = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update coupon");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -95,8 +105,11 @@ export const apiDeleteCoupon = async (id: number): Promise<void> => {
       Authorization: `Bearer ${token}`,
     },
   });
-
   if (!res.ok) {
-    throw new Error("Failed to delete coupon");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };

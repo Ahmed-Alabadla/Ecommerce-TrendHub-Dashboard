@@ -17,9 +17,12 @@ export const apiGetCarts = async (): Promise<Cart[]> => {
     },
     cache: "no-store",
   });
-
   if (!res.ok) {
-    throw new Error("Failed to fetch carts");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 

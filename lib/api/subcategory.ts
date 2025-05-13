@@ -19,7 +19,11 @@ export const apiGetSubCategories = async (): Promise<SubCategory[]> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch subcategories");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 
@@ -48,8 +52,11 @@ export const apiCreateSubCategory = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to create subcategory");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 
   const response = await res.json();
@@ -80,8 +87,11 @@ export const apiUpdateSubCategory = async (
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to update subcategory");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
   const response = await res.json();
 
@@ -100,8 +110,11 @@ export const apiDeleteSubCategory = async (id: number): Promise<void> => {
       Authorization: `Bearer ${token}`,
     },
   });
-
   if (!res.ok) {
-    throw new Error("Failed to delete subcategory");
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
   }
 };
