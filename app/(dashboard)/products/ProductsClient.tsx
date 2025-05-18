@@ -38,8 +38,6 @@ export default function ProductsClient({
     retryDelay: 1000, // 1 second between retries
   });
 
-  console.log("Products data:", data);
-
   if (isError) {
     toast.error("Failed to fetch products", {
       description: error?.message || "Please try again later",

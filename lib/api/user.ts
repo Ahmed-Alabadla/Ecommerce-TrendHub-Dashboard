@@ -41,6 +41,33 @@ export const apiGetUsers = async (
   return response;
 };
 
+export const apiGetCustomers = async (): Promise<User[]> => {
+  const token = getCookie("access_token");
+
+  if (!token) {
+    throw new Error("No access token found");
+  }
+
+  const res = await fetch(`${API_URL}/admin/users/role/customer`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const err = await res.json();
+
+    const message =
+      typeof err.message === "object" ? err.message[0] : err.message;
+    throw new Error(message);
+  }
+
+  const response = await res.json();
+
+  return response;
+};
+
 export const apiCreateUser = async (
   userData: Omit<User, "id" | "createdAt" | "updatedAt" | "isAccountVerified">
 ): Promise<User> => {

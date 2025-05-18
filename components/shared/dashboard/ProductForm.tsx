@@ -698,7 +698,7 @@ export default function ProductForm({
         )} */}
 
         {/* Physical Attributes Section */}
-        {step === 5 && (
+        {step === 4 && (
           <Card>
             <CardHeader>
               <CardTitle>Physical Attributes</CardTitle>

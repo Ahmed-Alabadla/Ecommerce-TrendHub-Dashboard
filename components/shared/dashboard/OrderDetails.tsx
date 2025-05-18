@@ -7,12 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CartItem } from "@/types/cart";
+import { Order } from "@/types/order";
 import Image from "next/image";
 
-export default function CartDetails({ cartItems }: { cartItems: CartItem[] }) {
-  let totalPrice = 0;
-
+export default function OrderDetails({ order }: { order: Order }) {
   return (
     <div className="max-h-[500px] overflow-y-auto w-full">
       <Table className="w-full rounded-md">
@@ -25,14 +23,7 @@ export default function CartDetails({ cartItems }: { cartItems: CartItem[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {cartItems.map((item) => {
-            totalPrice +=
-              item.product.priceAfterDiscount &&
-              item.product.priceAfterDiscount > 0
-                ? Number(item.product.priceAfterDiscount) *
-                  Number(item.quantity)
-                : Number(item.product.price) * Number(item.quantity);
-
+          {order.orderItems.map((item) => {
             return (
               <TableRow key={item.id}>
                 <TableCell>
@@ -80,12 +71,43 @@ export default function CartDetails({ cartItems }: { cartItems: CartItem[] }) {
           })}
         </TableBody>
         <TableFooter>
+          <TableRow className="border-none">
+            <TableCell colSpan={3} className="text-right font-bold">
+              Subtotal:
+            </TableCell>
+            <TableCell className="font-bold">
+              $
+              {order.totalOrderPrice > 0
+                ? (
+                    Number(order.totalOrderPrice) -
+                    Number(order.shippingPrice) -
+                    Number(order.taxPrice)
+                  ).toFixed(2)
+                : "0.00"}
+            </TableCell>
+          </TableRow>
+          <TableRow className="border-none">
+            <TableCell colSpan={3} className="text-right font-bold">
+              Shipping:
+            </TableCell>
+            <TableCell className="font-medium">
+              ${order.shippingPrice > 0 ? order.shippingPrice : "0.00"}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell colSpan={3} className="text-right font-bold">
+              Tax:
+            </TableCell>
+            <TableCell className="font-medium">
+              ${order.taxPrice > 0 ? order.taxPrice : "0.00"}
+            </TableCell>
+          </TableRow>
           <TableRow>
             <TableCell colSpan={3} className="text-right font-bold">
               Total:
             </TableCell>
             <TableCell className="font-bold">
-              ${cartItems.length > 0 ? totalPrice.toFixed(2) : "0.00"}
+              ${order.totalOrderPrice > 0 ? order.totalOrderPrice : "0.00"}
             </TableCell>
           </TableRow>
         </TableFooter>

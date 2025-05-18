@@ -1,5 +1,5 @@
 "use server";
-import { PaginatedUsers, UserQueryParams } from "@/types/user";
+import { PaginatedUsers, User, UserQueryParams } from "@/types/user";
 import { cookies } from "next/headers";
 
 export const getUsers = async (
@@ -41,5 +41,37 @@ export const getUsers = async (
     return response;
   } catch {
     throw new Error("Failed to fetch users");
+  }
+};
+
+export const getCustomers = async (): Promise<User[]> => {
+  const cookiesStore = await cookies();
+  const token = cookiesStore.get("access_token")?.value;
+
+  if (!token) throw new Error("No access token found");
+
+  try {
+    const res = await fetch(
+      `${process.env.API_URL}/admin/users/role/customer`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    //
+    const response = await res.json();
+
+    if (!res.ok) {
+      if (typeof response.message === "object") {
+        throw new Error(response.message[0]);
+      }
+      throw new Error(response.message);
+    }
+
+    return response;
+  } catch {
+    throw new Error("Failed to fetch customers");
   }
 };

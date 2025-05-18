@@ -421,3 +421,9 @@ export const ChangePasswordSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
+export const OrderSchema = z.object({
+  status: z.enum(["paid", "cancelled"], {
+    errorMap: () => ({ message: "Status must be either paid or cancelled" }),
+  }),
+});
