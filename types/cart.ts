@@ -6,7 +6,7 @@ export interface CartItem {
   id: number;
   quantity: number;
   color: string | null;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
   product: Product;
   cart: Cart;
@@ -16,7 +16,7 @@ export interface Cart {
   id: number;
   totalPrice: number;
   totalPriceAfterDiscount: number | null;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
   cartItems: CartItem[];
   coupon: Coupon | null;

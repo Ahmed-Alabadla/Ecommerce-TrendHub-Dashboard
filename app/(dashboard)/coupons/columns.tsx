@@ -50,10 +50,10 @@ export const columns: ColumnDef<Coupon>[] = [
   },
 
   {
-    accessorKey: "createAt",
+    accessorKey: "createdAt",
     header: "Create At",
     cell: ({ row }) => (
-      <>{new Date(row.getValue("createAt")).toLocaleString()}</>
+      <>{new Date(row.getValue("createdAt")).toLocaleString()}</>
     ),
   },
 

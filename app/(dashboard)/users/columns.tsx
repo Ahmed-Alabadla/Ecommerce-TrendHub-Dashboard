@@ -124,10 +124,10 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: "createAt",
+    accessorKey: "createdAt",
     header: "Registered",
     cell: ({ row }) => (
-      <>{new Date(row.getValue("createAt")).toLocaleString()}</>
+      <>{new Date(row.getValue("createdAt")).toLocaleString()}</>
     ),
   },
 

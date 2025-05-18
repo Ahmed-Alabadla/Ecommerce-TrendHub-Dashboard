@@ -42,7 +42,7 @@ export const apiGetUsers = async (
 };
 
 export const apiCreateUser = async (
-  userData: Omit<User, "id" | "createAt" | "updatedAt" | "isAccountVerified">
+  userData: Omit<User, "id" | "createdAt" | "updatedAt" | "isAccountVerified">
 ): Promise<User> => {
   const token = getCookie("access_token");
 

@@ -80,10 +80,10 @@ export const columns: ColumnDef<Cart>[] = [
   },
 
   {
-    accessorKey: "createAt",
+    accessorKey: "createdAt",
     header: "Create At",
     cell: ({ row }) => (
-      <>{new Date(row.getValue("createAt")).toLocaleString()}</>
+      <>{new Date(row.getValue("createdAt")).toLocaleString()}</>
     ),
   },
   {
@@ -117,7 +117,7 @@ export const columns: ColumnDef<Cart>[] = [
                 Cart #{cart.id} - {cart.user.name}
               </DialogTitle>
               <DialogDescription>
-                Created on {new Date(cart.createAt).toLocaleString()} • Last
+                Created on {new Date(cart.createdAt).toLocaleString()} • Last
                 updated on {new Date(cart.updatedAt).toLocaleString()}
               </DialogDescription>
             </DialogHeader>

@@ -6,7 +6,7 @@ export interface Category {
   slug: string;
   subCategories: SubCategory[];
   image?: string | null;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
 }
 

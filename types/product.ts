@@ -31,7 +31,7 @@ export interface Product {
   warranty: string | null;
   weight: number | null;
   dimensions: Dimensions | null;
-  createAt: Date;
+  createdAt: Date;
   updatedAt: Date;
   category: Category;
   subCategory: SubCategory | null;

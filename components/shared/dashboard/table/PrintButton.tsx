@@ -287,7 +287,7 @@ function PrintButton<TData>({
 
   function formatHeaderId(headerId: string): string {
     const headerMap: Record<string, string> = {
-      createAt: "Created At",
+      createdAt: "Created At",
       birth_date: "Birth Date",
       isActive: "Status",
     };

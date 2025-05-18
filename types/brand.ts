@@ -3,7 +3,7 @@ export interface Brand {
   name: string;
   slug: string;
   image?: string | null;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
 }
 

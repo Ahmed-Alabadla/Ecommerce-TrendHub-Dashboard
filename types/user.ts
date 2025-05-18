@@ -10,7 +10,7 @@ export interface User {
   address?: string | null;
   isActive?: boolean | undefined;
   gender?: string | null;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
 }
 

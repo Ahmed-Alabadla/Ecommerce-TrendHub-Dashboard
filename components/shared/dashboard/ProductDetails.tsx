@@ -176,13 +176,18 @@ export default function ProductDetails({ id }: { id: string }) {
                       </h3>
                       <div className="flex items-center">
                         <span className="text-2xl font-bold">
-                          ${product.priceAfterDiscount || product.price}
+                          $
+                          {product.priceAfterDiscount &&
+                          product.priceAfterDiscount > 0
+                            ? product.priceAfterDiscount
+                            : product.price}
                         </span>
-                        {product.priceAfterDiscount && (
-                          <span className="ml-2 text-muted-foreground line-through">
-                            ${product.price}
-                          </span>
-                        )}
+                        {product.priceAfterDiscount &&
+                          product.priceAfterDiscount > 0 && (
+                            <span className="ml-2 text-muted-foreground line-through">
+                              ${product.price}
+                            </span>
+                          )}
                       </div>
                     </div>
 
@@ -225,8 +230,6 @@ export default function ProductDetails({ id }: { id: string }) {
                     </div>
                   </div>
 
-
-
                   <Separator />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -236,7 +239,7 @@ export default function ProductDetails({ id }: { id: string }) {
                       </h3>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{formatDate(new Date(product.createAt))}</span>
+                        <span>{formatDate(new Date(product.createdAt))}</span>
                       </div>
                     </div>
 

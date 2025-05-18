@@ -5,7 +5,7 @@ export interface SubCategory {
   name: string;
   slug: string;
   category: Category;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
 }
 

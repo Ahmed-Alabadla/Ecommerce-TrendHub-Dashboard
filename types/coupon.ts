@@ -6,7 +6,7 @@ export interface Coupon {
   type: "fixed" | "percentage";
   maxUsage: number;
   currentUsage: number;
-  createAt: Date;
+  createdAt: Date;
   updatedAt: Date;
 }
 

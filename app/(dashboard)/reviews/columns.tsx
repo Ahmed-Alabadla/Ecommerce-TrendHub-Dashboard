@@ -61,10 +61,10 @@ export const columns: ColumnDef<Review>[] = [
   },
 
   {
-    accessorKey: "createAt",
+    accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => (
-      <>{new Date(row.getValue("createAt")).toLocaleString()}</>
+      <>{new Date(row.getValue("createdAt")).toLocaleString()}</>
     ),
   },
 

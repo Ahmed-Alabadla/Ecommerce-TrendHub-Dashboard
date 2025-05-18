@@ -9,7 +9,7 @@ export interface Settings {
   tax_enabled?: boolean;
   shipping_rate?: number;
   shipping_enabled?: boolean;
-  createAt: Date;
+  createdAt: Date;
   updatedAt: Date;
 }
 

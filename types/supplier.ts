@@ -4,7 +4,7 @@ export interface Supplier {
   email: string;
   phone: string;
   website: string;
-  createAt: Date;
+  createdAt: Date;
   updatedAt: Date;
 }
 
