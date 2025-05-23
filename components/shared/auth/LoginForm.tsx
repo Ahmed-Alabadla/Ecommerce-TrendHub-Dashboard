@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useTransition } from "react";
-import SocialButton from "./SocialButton";
+import GoogleLoginButton from "./GoogleLoginButton";
 import { login } from "@/actions/auth";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
@@ -144,7 +144,7 @@ function LoginForm() {
         </div>
       </div>
 
-      <SocialButton />
+      <GoogleLoginButton />
     </>
   );
 }

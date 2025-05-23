@@ -7,7 +7,7 @@ import {
   ResetPasswordSchema,
 } from "@/schemas";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
@@ -44,6 +44,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24, // 1 day
     path: "/",
+    sameSite: "lax",
   });
 
   return { success: "Login successful!" };
@@ -161,18 +162,20 @@ export const profile = async () => {
     redirect("/auth/login");
   }
 
-  const profileRes = await fetch(`${process.env.API_URL}/users/profile`, {
+  const res = await fetch(`${process.env.API_URL}/users/profile`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-cache",
   });
-  if (!profileRes.ok) {
+
+  if (!res.ok) {
     redirect("/auth/login");
   }
 
-  const user = await profileRes.json();
+  const user = await res.json();
 
   if (user.role !== "admin") {
-    redirect("https://ahmedalabadla.tech");
+    cookieStore.delete("access_token");
+    redirect("https://ahmedalabadla.tech", RedirectType.replace);
   }
 
   return user;

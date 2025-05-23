@@ -1,5 +1,5 @@
 import { ChangePasswordDto, UpdateProfileDto } from "@/types/user";
-import { getCookie } from "cookies-next/client";
+import { getCookie, deleteCookie } from "cookies-next/client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -27,6 +27,12 @@ export const apiProfile = async () => {
   }
 
   const data = await res.json();
+
+  if (data.role !== "admin") {
+    deleteCookie("access_token");
+    window.location.href = "https://ahmedalabadla.tech";
+    return;
+  }
 
   return data;
 };

@@ -22,7 +22,7 @@ export default async function DashboardLayout({
   }
   await queryClient.prefetchQuery<User>({
     queryKey: ["profile"],
-    queryFn: () => profile(),
+    queryFn: profile,
     staleTime: Infinity, // never becomes stale
   });
 

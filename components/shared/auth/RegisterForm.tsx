@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import SocialButton from "./SocialButton";
+import GoogleLoginButton from "./GoogleLoginButton";
 import { usePasswordStrength } from "@/hooks/use-password-strength";
 import { useTransition } from "react";
 import { registerAction } from "@/actions/auth";
@@ -160,7 +160,7 @@ function RegisterForm() {
         </div>
       </div>
 
-      <SocialButton />
+      <GoogleLoginButton />
     </>
   );
 }

@@ -22,13 +22,12 @@ export default function UserMenu() {
   const { data } = useProfile();
 
   const handleClickLogout = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    await logout().then((res) => {
+    await logout().then(() => {
       toast.success("Logout successful!", {
         duration: 5000,
       });
 
-      redirect("login");
+      redirect("/auth/login");
     });
   };
 
