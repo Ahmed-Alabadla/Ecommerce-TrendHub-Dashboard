@@ -175,7 +175,7 @@ export const profile = async () => {
 
   if (user.role !== "admin") {
     cookieStore.delete("access_token");
-    redirect("https://ahmedalabadla.tech", RedirectType.replace);
+    redirect(process.env.ECOMMERCE_URL as string, RedirectType.replace);
   }
 
   return user;

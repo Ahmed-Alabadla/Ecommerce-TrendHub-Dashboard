@@ -12,13 +12,18 @@ import { columns } from "./columns";
 
 import { toast } from "sonner";
 import { useCarts } from "@/hooks/use-carts";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function CartsClient() {
-  const { data, error, isError, isPending } = useCarts();
+  const { data, error, isError, isPending, refetch } = useCarts();
 
   if (isError) {
     toast.error(error?.message as string, {
       description: "Failed to fetch carts data",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -32,15 +37,22 @@ export default function CartsClient() {
           </p>
         </div>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Carts</CardTitle>
-          <CardDescription>Showing {data?.length} Coupons</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data ?? []} loading={isPending} />
-        </CardContent>
-      </Card>
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Carts</CardTitle>
+            <CardDescription>Showing {data?.length} Coupons</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={columns}
+              data={data ?? []}
+              loading={isPending}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -20,10 +20,10 @@ export default async function SubCategoriesPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)} key={"subcategories"}>
-      <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
         <SubCategoriesClient />
-      </Suspense>
-    </HydrationBoundary>
+      </HydrationBoundary>
+    </Suspense>
   );
 }

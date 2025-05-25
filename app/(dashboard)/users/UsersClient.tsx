@@ -18,6 +18,7 @@ import UsersFilters from "@/components/shared/dashboard/UsersFilters";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { apiGetUsers } from "@/lib/api/user";
 import { toast } from "sonner";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function UsersClient({
   searchParams,
@@ -28,7 +29,7 @@ export default function UsersClient({
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
 
-  const { data, isLoading, error } = useSuspenseQuery({
+  const { data, isPending, error, refetch } = useSuspenseQuery({
     queryKey: ["users", { page: pageNumber, limit: limitNumber, email, name }],
     queryFn: () =>
       apiGetUsers({ page: pageNumber, limit: limitNumber, email, name }),
@@ -40,6 +41,10 @@ export default function UsersClient({
   if (error) {
     toast.error(error.message as string, {
       description: "Failed to fetch users",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -64,34 +69,37 @@ export default function UsersClient({
           <UserForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>
-            Manage your system users and permissions
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <UsersFilters />
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>User Management</CardTitle>
+            <CardDescription>
+              Manage your system users and permissions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UsersFilters />
 
-          <DataTablePaginate
-            columns={columns}
-            data={data.data}
-            loading={isLoading}
-            currentPage={data.meta.current_page}
-            totalItems={data.meta.total}
-            itemsPerPage={data.meta.per_page}
-          />
+            <DataTablePaginate
+              columns={columns}
+              data={data.data}
+              loading={isPending}
+              currentPage={data.meta.current_page}
+              totalItems={data.meta.total}
+              itemsPerPage={data.meta.per_page}
+            />
 
-          <PaginationTable
-            currentPage={data.meta.current_page}
-            totalItems={data.meta.total}
-            itemsPerPage={data.meta.per_page}
-            lastPage={data.meta.last_page}
-            className="mt-6"
-          />
-        </CardContent>
-      </Card>
+            <PaginationTable
+              currentPage={data.meta.current_page}
+              totalItems={data.meta.total}
+              itemsPerPage={data.meta.per_page}
+              lastPage={data.meta.last_page}
+              className="mt-6"
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -9,7 +9,8 @@ export const queryClient = new QueryClient({
       refetchOnMount: false, // Let Suspense handle it
       refetchOnReconnect: true,
       retry: 2, // Retry twice before failing
-      retryDelay: 1000, // 1 second between retries
+
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
     },
     mutations: {
       retry: 1,

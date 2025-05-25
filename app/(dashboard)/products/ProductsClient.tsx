@@ -15,11 +15,11 @@ import DataTablePaginate from "@/components/shared/dashboard/table/DataTablePagi
 import PaginationTable from "@/components/shared/dashboard/table/PaginationTable";
 import { ProductQueryParams } from "@/types/product";
 import { apiGetProducts } from "@/lib/api/product";
-import Loading from "@/app/loading";
 import { DialogWrapper } from "@/components/shared/dashboard/DialogWrapper";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import ProductForm from "@/components/shared/dashboard/ProductForm";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function ProductsClient({
   searchParams,
@@ -30,17 +30,24 @@ export default function ProductsClient({
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
 
-  const { data, isLoading, isError, error, isFetching } = useQuery({
+  const { data, isError, error, isPending, refetch } = useQuery({
     queryKey: ["products", { page: pageNumber, limit: limitNumber }],
     queryFn: () => apiGetProducts({ page: pageNumber, limit: limitNumber }),
     staleTime: 60 * 1000, // 1 minute stale time
     retry: 2, // Retry twice before failing
-    retryDelay: 1000, // 1 second between retries
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    // Enable background refetching for better UX
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 
   if (isError) {
     toast.error("Failed to fetch products", {
       description: error?.message || "Please try again later",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -66,12 +73,9 @@ export default function ProductsClient({
           <ProductForm type="create" />
         </DialogWrapper>
       </div>
-      {(isLoading || isFetching) && (
-        <div className="flex items-center justify-center h-96">
-          <Loading />
-        </div>
-      )}
-      {data && !isLoading && !isFetching && (
+      {isPending && <TableSkeleton />}
+
+      {data && !isPending && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Products Inventory</CardTitle>
@@ -84,7 +88,7 @@ export default function ProductsClient({
             <DataTablePaginate
               columns={columns}
               data={data?.data ?? []}
-              loading={isLoading}
+              loading={isPending}
               currentPage={data?.meta?.current_page ?? 1}
               totalItems={data?.meta?.total || 0}
               itemsPerPage={data?.meta?.per_page ?? 0}

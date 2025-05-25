@@ -30,7 +30,7 @@ export const apiProfile = async () => {
 
   if (data.role !== "admin") {
     deleteCookie("access_token");
-    window.location.href = "https://ahmedalabadla.tech";
+    window.location.href = process.env.NEXT_PUBLIC_ECOMMERCE_URL as string;
     return;
   }
 

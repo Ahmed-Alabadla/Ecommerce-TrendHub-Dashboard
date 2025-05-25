@@ -16,13 +16,18 @@ import { columns } from "./columns";
 import CategoryForm from "@/components/shared/dashboard/CategoryForm";
 import { toast } from "sonner";
 import { useCategory } from "@/hooks/use-categories";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function CategoriesClient() {
-  const { data, error, isPending } = useCategory();
+  const { data, error, isPending, refetch } = useCategory();
 
   if (error) {
     toast.error(error.message as string, {
       description: "Failed to fetch categories",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -49,15 +54,18 @@ export default function CategoriesClient() {
           <CategoryForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Categories</CardTitle>
-          <CardDescription>Showing {data.length} categories</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data} loading={isPending} />
-        </CardContent>
-      </Card>
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Categories</CardTitle>
+            <CardDescription>Showing {data.length} categories</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable columns={columns} data={data} loading={isPending} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

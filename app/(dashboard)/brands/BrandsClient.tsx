@@ -16,13 +16,18 @@ import { columns } from "./columns";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import BrandForm from "@/components/shared/dashboard/BrandForm";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function BrandsClient() {
-  const { data, error, isError, isPending } = useBrands();
+  const { data, error, isError, isPending, refetch } = useBrands();
 
   if (isError) {
     toast.error(error?.message as string, {
       description: "Failed to fetch brands",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -47,15 +52,18 @@ export default function BrandsClient() {
           <BrandForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Brands</CardTitle>
-          <CardDescription>Showing {data.length} brands</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data} loading={isPending} />
-        </CardContent>
-      </Card>
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Brands</CardTitle>
+            <CardDescription>Showing {data.length} brands</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable columns={columns} data={data} loading={isPending} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

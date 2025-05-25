@@ -3,6 +3,8 @@ import { queryClient } from "@/lib/react-query/client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getReviews } from "@/actions/reviews";
 import ReviewsClient from "./ReviewsClient";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Reviews",
@@ -31,8 +33,12 @@ export default async function ReviewsPage({
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ReviewsClient searchParams={{ page: pageNumber, limit: limitNumber }} />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ReviewsClient
+          searchParams={{ page: pageNumber, limit: limitNumber }}
+        />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

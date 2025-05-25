@@ -3,6 +3,8 @@ import BrandsClient from "./BrandsClient";
 import { queryClient } from "@/lib/react-query/client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getBrands } from "@/actions/brands";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Brands",
@@ -18,8 +20,10 @@ export default async function BrandsPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)} key={"brands"}>
-      <BrandsClient />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <BrandsClient />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

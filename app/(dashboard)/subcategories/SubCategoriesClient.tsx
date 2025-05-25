@@ -15,13 +15,18 @@ import { columns } from "./columns";
 import { toast } from "sonner";
 import SubCategoryForm from "@/components/shared/dashboard/SubCategoryForm";
 import { useSubCategories } from "@/hooks/use-subcategories";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function SubCategoriesClient() {
-  const { data, error, isError, isPending } = useSubCategories();
+  const { data, error, isError, isPending, refetch } = useSubCategories();
 
   if (isError) {
     toast.error(error?.message as string, {
       description: "Failed to fetch subcategories",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -48,15 +53,20 @@ export default function SubCategoriesClient() {
           <SubCategoryForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Sub Categories</CardTitle>
-          <CardDescription>Showing {data.length} subcategories</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data} loading={isPending} />
-        </CardContent>
-      </Card>
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Sub Categories</CardTitle>
+            <CardDescription>
+              Showing {data.length} subcategories
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable columns={columns} data={data} loading={isPending} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

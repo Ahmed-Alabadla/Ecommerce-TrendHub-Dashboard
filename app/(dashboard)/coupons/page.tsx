@@ -3,6 +3,8 @@ import { queryClient } from "@/lib/react-query/client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getCoupons } from "@/actions/coupons";
 import CouponsClient from "./CouponsClient";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Coupons",
@@ -18,8 +20,10 @@ export default async function CouponsPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)} key={"coupons"}>
-      <CouponsClient />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)} key={"coupons"}>
+        <CouponsClient />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

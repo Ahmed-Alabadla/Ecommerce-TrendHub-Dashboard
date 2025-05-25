@@ -39,18 +39,21 @@ export default function OrdersClient() {
 
   const [customerId, setCustomerId] = useState<number>();
 
-  const { data, isPending, isError, error } = useQuery({
+  const { data, isPending, isError, error, refetch } = useQuery({
     queryKey: ["orders", customerId],
     queryFn: () => apiGetOrders(customerId!),
     staleTime: 60 * 1000, // 1 minute stale time
     retry: 2, // Retry twice before failing
-    retryDelay: 1000, // 1 second between retries
     enabled: !!customerId, // Only run the query if customerId is set
   });
 
   if (isError) {
     toast.error("Failed to fetch orders", {
       description: error?.message || "Please try again later",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 

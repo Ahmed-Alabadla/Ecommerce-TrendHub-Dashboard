@@ -16,13 +16,18 @@ import { columns } from "./columns";
 import { toast } from "sonner";
 import { useSuppliers } from "@/hooks/use-suppliers";
 import SupplierForm from "@/components/shared/dashboard/SupplierForm";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function SuppliersClient() {
-  const { data, error, isError, isPending } = useSuppliers();
+  const { data, error, isError, isPending, refetch } = useSuppliers();
 
   if (isError) {
     toast.error(error?.message as string, {
-      description: "Failed to fetch coupons",
+      description: "Failed to fetch suppliers",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -47,17 +52,24 @@ export default function SuppliersClient() {
           <SupplierForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Suppliers</CardTitle>
-          <CardDescription>
-            Showing {data?.length || 0} Suppliers
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data || []} loading={isPending} />
-        </CardContent>
-      </Card>
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Suppliers</CardTitle>
+            <CardDescription>
+              Showing {data?.length || 0} Suppliers
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={columns}
+              data={data || []}
+              loading={isPending}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

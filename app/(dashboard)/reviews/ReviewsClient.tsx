@@ -15,6 +15,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { apiGetReviews } from "@/lib/api/review";
 import DataTablePaginate from "@/components/shared/dashboard/table/DataTablePaginate";
 import PaginationTable from "@/components/shared/dashboard/table/PaginationTable";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function ReviewsClient({
   searchParams,
@@ -25,7 +26,7 @@ export default function ReviewsClient({
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
 
-  const { data, isLoading, isError, error } = useSuspenseQuery({
+  const { data, isPending, isError, error, refetch } = useSuspenseQuery({
     queryKey: ["reviews", { page: pageNumber, limit: limitNumber }],
     queryFn: () => apiGetReviews({ page: pageNumber, limit: limitNumber }),
     staleTime: 0, // Always stale to force refetch
@@ -34,6 +35,10 @@ export default function ReviewsClient({
   if (isError) {
     toast.error(error?.message as string, {
       description: "Failed to fetch reviews",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -47,31 +52,36 @@ export default function ReviewsClient({
           </p>
         </div>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Reviews</CardTitle>
-          <CardDescription>Showing {data.data.length} reviews</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* TODO: filter by product */}
-          <DataTablePaginate
-            columns={columns}
-            data={data.data}
-            loading={isLoading}
-            currentPage={data.meta.current_page}
-            totalItems={data.meta.total}
-            itemsPerPage={data.meta.per_page}
-          />
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Reviews</CardTitle>
+            <CardDescription>
+              Showing {data.data.length} reviews
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* TODO: filter by product */}
+            <DataTablePaginate
+              columns={columns}
+              data={data.data}
+              loading={isPending}
+              currentPage={data.meta.current_page}
+              totalItems={data.meta.total}
+              itemsPerPage={data.meta.per_page}
+            />
 
-          <PaginationTable
-            currentPage={data.meta.current_page}
-            totalItems={data.meta.total}
-            itemsPerPage={data.meta.per_page}
-            lastPage={data.meta.last_page}
-            className="mt-6"
-          />
-        </CardContent>
-      </Card>
+            <PaginationTable
+              currentPage={data.meta.current_page}
+              totalItems={data.meta.total}
+              itemsPerPage={data.meta.per_page}
+              lastPage={data.meta.last_page}
+              className="mt-6"
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { queryClient } from "@/lib/react-query/client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import SuppliersClient from "./SuppliersClient";
 import { getSuppliers } from "@/actions/suppliers";
+import Loading from "@/app/loading";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Suppliers",
@@ -18,8 +20,10 @@ export default async function SuppliersPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)} key={"suppliers"}>
-      <SuppliersClient />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <SuppliersClient />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

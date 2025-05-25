@@ -3,6 +3,8 @@ import { queryClient } from "@/lib/react-query/client";
 import { getUsers } from "@/actions/users";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Metadata } from "next";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Users",
@@ -38,10 +40,12 @@ export default async function UsersPage({
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <UsersClient
-        searchParams={{ page: pageNumber, limit: limitNumber, email, name }}
-      />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <UsersClient
+          searchParams={{ page: pageNumber, limit: limitNumber, email, name }}
+        />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import { queryClient } from "@/lib/react-query/client";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import ProductsClient from "./ProductsClient";
 import { getProducts } from "@/actions/products";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -17,11 +18,6 @@ export default async function ProductsPage({
   const { page = "1", limit = "10" } = await searchParams;
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
-  // Clear any existing product queries
-  // queryClient.removeQueries({
-  //   queryKey: ["products"],
-  //   exact: false,
-  // });
 
   try {
     // Prefetch with consistent query key structure
@@ -36,8 +32,11 @@ export default async function ProductsPage({
   }
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    // <HydrationBoundary state={dehydrate(queryClient)}>
+    //   <ProductsClient searchParams={{ page: pageNumber, limit: limitNumber }} />
+    // </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
       <ProductsClient searchParams={{ page: pageNumber, limit: limitNumber }} />
-    </HydrationBoundary>
+    </Suspense>
   );
 }

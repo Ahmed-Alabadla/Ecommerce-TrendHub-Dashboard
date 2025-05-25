@@ -3,6 +3,8 @@ import { queryClient } from "@/lib/react-query/client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getCustomers } from "@/actions/users";
 import OrdersClient from "./OrdersClient";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Orders",
@@ -18,8 +20,10 @@ export default async function CartsPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <OrdersClient />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <OrdersClient />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

@@ -16,13 +16,18 @@ import { columns } from "./columns";
 import { toast } from "sonner";
 import { useCoupons } from "@/hooks/use-coupons";
 import CouponForm from "@/components/shared/dashboard/CouponForm";
+import TableSkeleton from "@/components/shared/dashboard/table/TableSkeleton";
 
 export default function CouponsClient() {
-  const { data, error, isError, isPending } = useCoupons();
+  const { data, error, isError, isPending, refetch } = useCoupons();
 
   if (isError) {
     toast.error(error?.message as string, {
       description: "Failed to fetch coupons",
+      action: {
+        label: "Retry",
+        onClick: () => refetch(),
+      },
     });
   }
 
@@ -49,15 +54,18 @@ export default function CouponsClient() {
           <CouponForm type="create" />
         </DialogWrapper>
       </div>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Coupons</CardTitle>
-          <CardDescription>Showing {data.length} Coupons</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={data} loading={isPending} />
-        </CardContent>
-      </Card>
+      {isPending && <TableSkeleton />}
+      {data && !isPending && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Coupons</CardTitle>
+            <CardDescription>Showing {data.length} Coupons</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable columns={columns} data={data} loading={isPending} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

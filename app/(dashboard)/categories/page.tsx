@@ -3,6 +3,8 @@ import CategoriesClient from "./CategoriesClient";
 import { queryClient } from "@/lib/react-query/client";
 import { getCategories } from "@/actions/categories";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
   title: "Categories",
@@ -18,8 +20,10 @@ export default async function CategoriesPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)} key={"categories"}>
-      <CategoriesClient />
-    </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)} key={"categories"}>
+        <CategoriesClient />
+      </HydrationBoundary>
+    </Suspense>
   );
 }

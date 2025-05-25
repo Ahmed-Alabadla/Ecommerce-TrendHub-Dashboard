@@ -19,10 +19,10 @@ export default async function SettingsPage() {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
         <SettingsClient />
-      </Suspense>
-    </HydrationBoundary>
+      </HydrationBoundary>
+    </Suspense>
   );
 }
