@@ -3,7 +3,7 @@ import { getCookie } from "cookies-next/client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const apiGetOrders = async (customerId: number): Promise<Order[]> => {
+export const apiGetOrders = async (customerId: string): Promise<Order[]> => {
   const token = getCookie("access_token");
 
   if (!token) {

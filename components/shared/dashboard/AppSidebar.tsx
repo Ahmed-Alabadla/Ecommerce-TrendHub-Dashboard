@@ -4,17 +4,15 @@ import {
   Package,
   FolderOpen,
   Folder,
-  ShoppingCart,
   Users,
   UserRound,
-  BarChart,
   Settings,
   LogOut,
   MessageSquare,
   Percent,
   Truck,
   Tag,
-  ShoppingBasket,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -60,15 +58,11 @@ const menuItems = [
     path: "/brands",
     icon: Tag,
   },
-  {
-    title: "Orders",
-    path: "/orders",
-    icon: ShoppingCart,
-  },
+
   {
     title: "Carts",
     path: "/carts",
-    icon: ShoppingBasket,
+    icon: ShoppingCart,
   },
   {
     title: "Customers",
@@ -96,11 +90,6 @@ const menuItems = [
     icon: Truck,
   },
 
-  {
-    title: "Analytics",
-    path: "/analytics",
-    icon: BarChart,
-  },
   {
     title: "Settings",
     path: "/settings",
@@ -151,7 +140,7 @@ export default function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(5, 9).map((item) => (
+              {menuItems.slice(5, 8).map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <Link
                     href={item.path}
@@ -177,7 +166,7 @@ export default function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(9, 12).map((item) => (
+              {menuItems.slice(8, 11).map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <Link
                     href={item.path}
@@ -201,7 +190,7 @@ export default function AppSidebar() {
           <SidebarGroupLabel className="px-2 py-1">System</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(12).map((item) => (
+              {menuItems.slice(11).map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <Link
                     href={item.path}
