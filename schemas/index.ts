@@ -24,7 +24,8 @@ const imageSchema = z.union(
             return (
               imageUrlPattern.test(value) ||
               /\/image\//i.test(value) ||
-              /cloudinary/i.test(value)
+              /cloudinary/i.test(value) ||
+              /googleusercontent/i.test(value)
             );
           } catch {
             return false;

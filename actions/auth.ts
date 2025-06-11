@@ -86,7 +86,7 @@ export const registerAction = async (
 export const forgotPassword = async (
   values: z.infer<typeof ForgotPasswordSchema>
 ) => {
-  const res = await fetch(`${process.env.API_URL}/auth/app/forgot-password`, {
+  const res = await fetch(`${process.env.API_URL}/auth/forgot-password`, {
     method: "POST",
     body: JSON.stringify(values),
     headers: {

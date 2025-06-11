@@ -8,7 +8,6 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Generates a random password with customizable options
- *
  * @param length - Length of the password (default: 12)
  * @param options - Configuration options for password generation
  * @returns Generated password string
@@ -128,6 +127,11 @@ export const useImageUpload = () => {
   };
 };
 
+/**
+ * Formats a file size in bytes to a human-readable string
+ * @param bytes - The size in bytes to format
+ * @returns Formatted file size string
+ */
 export function formatFileSize(bytes?: number) {
   if (!bytes) return "0 B";
   const k = 1024;
