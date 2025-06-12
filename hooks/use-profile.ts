@@ -6,8 +6,8 @@ export const useProfile = () => {
   return useQuery<User>({
     queryKey: ["profile"],
     queryFn: apiProfile,
-    staleTime: Infinity, // never becomes stale
-    refetchOnWindowFocus: false, // no need to refetch on focus
-    refetchOnReconnect: false, // no need to refetch on reconnect
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    retry: 1,
   });
 };

@@ -261,7 +261,7 @@ export default function CouponForm({
           name="expirationDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Expiration Date</FormLabel>
+              <FormLabel htmlFor="date">Expiration Date</FormLabel>
               <FormControl>
                 {/* <Input
                   type="date"

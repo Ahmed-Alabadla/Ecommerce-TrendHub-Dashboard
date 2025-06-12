@@ -1,9 +1,7 @@
 "use client";
 
-import { format, getMonth, getYear, setMonth, setYear } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -11,15 +9,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+
+import { getYear } from "date-fns";
+
+function formatDate(date: Date | undefined) {
+  if (!date) {
+    return "";
+  }
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function isValidDate(date: Date | undefined) {
+  if (!date) {
+    return false;
+  }
+  return !isNaN(date.getTime());
+}
 
 interface DatePickerProps {
   selected: Date | undefined;
@@ -37,126 +49,71 @@ export function DatePicker({
   disabled = false,
 }: DatePickerProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  // const date = selected || new Date();
-
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      setDate(date);
-      setIsPopoverOpen(false);
-    }
-  };
-  const formatDate = (date: Date | undefined) => {
-    if (!date) return "";
-    return format(date, "yyyy-MM-dd");
-    // return date.toLocaleDateString("es-CL");
-  };
-
-  // const disabledFutureDate = (date: Date) => {
-  //   return date > new Date() || date < new Date("1900-01-01");
-  // };
-
-  // Generate an array of month names
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  // Generate years array (current year - 100 to current year + 100)
-  const years = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, i) => startYear + i
-  );
-
-  const handleMonthChange = (month: string) => {
-    const newDate = date
-      ? setMonth(date, months.indexOf(month))
-      : setMonth(new Date(), months.indexOf(month));
-    setDate(newDate);
-  };
-
-  const handleYearChange = (year: string) => {
-    const newDate = date
-      ? setYear(date, parseInt(year))
-      : setYear(new Date(), parseInt(year));
-    setDate(newDate);
-  };
+  const [value, setValue] = useState(formatDate(date));
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={false}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            " justify-start text-left font-normal  ",
-            !date && "text-muted-foreground"
-          )}
-          onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-          disabled={disabled}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? formatDate(date) : <span>Select Date</span>}
-        </Button>
-      </PopoverTrigger>
+    <div className="relative flex gap-2">
+      <Input
+        id="date"
+        value={value}
+        disabled={disabled}
+        placeholder="dd/mm/yyyy"
+        className="bg-background pr-10"
+        onChange={(e) => {
+          const date = new Date(e.target.value);
+          setValue(e.target.value);
 
-      <PopoverContent
-        className="w-auto p-0"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        style={{ pointerEvents: "auto" }}
+          if (isValidDate(date)) {
+            setDate(date);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setIsPopoverOpen(true);
+          }
+        }}
+      />
+      <Popover
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+        modal={false}
       >
-        <div className="flex justify-between items-center gap-1 p-2">
-          {/* months */}
-          <Select
-            onValueChange={handleMonthChange}
-            value={date ? months[getMonth(date)] : ""}
+        <PopoverTrigger asChild>
+          <Button
+            id="date-picker"
+            variant="ghost"
+            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
           >
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Month" />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((month) => (
-                <SelectItem key={month} value={month}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {/* years */}
-          <Select
-            onValueChange={handleYearChange}
-            value={date ? getYear(date).toString() : ""}
-          >
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Year" />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={handleDateChange}
-          // disabled={(date) => disabledFutureDate(date)}
-          initialFocus
-          month={date}
-          onMonthChange={setDate}
-        />
-      </PopoverContent>
-    </Popover>
+            <CalendarIcon className="size-3.5" />
+            <span className="sr-only">Select date</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-auto overflow-hidden p-0"
+          align="end"
+          alignOffset={-8}
+          sideOffset={10}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          style={{ pointerEvents: "auto" }}
+        >
+          <Calendar
+            mode="single"
+            selected={date}
+            captionLayout="dropdown"
+            month={date}
+            startMonth={new Date(startYear, 0)}
+            endMonth={new Date(endYear, 11)}
+            onMonthChange={setDate}
+            onSelect={(date) => {
+              setDate(date);
+              setValue(formatDate(date));
+              setIsPopoverOpen(false);
+            }}
+            autoFocus
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }

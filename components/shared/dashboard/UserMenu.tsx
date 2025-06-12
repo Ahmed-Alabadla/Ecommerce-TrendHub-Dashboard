@@ -18,6 +18,8 @@ import React from "react";
 import { toast } from "sonner";
 import { InstallButton } from "./InstallButton";
 
+import { deleteCookie } from "cookies-next/client";
+
 export default function UserMenu() {
   const { data } = useProfile();
 
@@ -30,6 +32,11 @@ export default function UserMenu() {
       redirect("/auth/login");
     });
   };
+
+  if (data && data.role !== "admin") {
+    deleteCookie("access_token");
+    redirect(process.env.NEXT_PUBLIC_ECOMMERCE_URL as string);
+  }
 
   return (
     <DropdownMenu>
