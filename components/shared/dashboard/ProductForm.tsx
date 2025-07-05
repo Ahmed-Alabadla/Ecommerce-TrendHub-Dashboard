@@ -724,7 +724,7 @@ export default function ProductForm({
                           type="number"
                           placeholder="0"
                           min={0}
-                          step={0.01}
+                          step={0.001}
                           {...field}
                           value={field.value || ""}
                           onChange={(e) => {
@@ -775,7 +775,7 @@ export default function ProductForm({
                             type="number"
                             placeholder="0"
                             min={0}
-                            step={0.1}
+                            step={0.01}
                             {...field}
                             value={field.value || ""}
                             onChange={(e) => {
@@ -801,7 +801,7 @@ export default function ProductForm({
                             type="number"
                             placeholder="0"
                             min={0}
-                            step={0.1}
+                            step={0.01}
                             {...field}
                             value={field.value || ""}
                             onChange={(e) => {
@@ -827,7 +827,7 @@ export default function ProductForm({
                             type="number"
                             placeholder="0"
                             min={0}
-                            step={0.1}
+                            step={0.01}
                             {...field}
                             value={field.value || ""}
                             onChange={(e) => {
